@@ -89,7 +89,7 @@
       </Row>
       <Row class="_labelFor">
         <Col span="6" offset="1">
-          <p><span class="_span"></span><b>部门：</b></p>
+          <p><span class="_span">*</span><b>部门：</b></p>
         </Col>
         <Col span="16">
           <Select v-model="addData.deptId">
@@ -408,6 +408,8 @@ export default {
         this.resMessage('warning', '请选择用户状态')
       } else if (this.addData.companyId === null) {
         this.resMessage('warning', '请选择单位')
+      } else if (this.addData.deptId === null) {
+        this.resMessage('warning', '请选择部门')
       } else if (this.addData.roleId === null) {
         this.resMessage('warning', '请选择角色')
       } else {
