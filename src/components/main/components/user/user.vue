@@ -6,9 +6,6 @@
       </Badge>
       <Icon :size="18" type="md-arrow-dropdown"></Icon>
       <DropdownMenu slot="list">
-        <DropdownItem name="message">
-          消息中心<Badge style="margin-left: 10px" :count="messageUnreadCount"></Badge>
-        </DropdownItem>
         <DropdownItem name="logout">退出登录</DropdownItem>
       </DropdownMenu>
     </Dropdown>
@@ -36,9 +33,18 @@ export default {
     ]),
     logout () {
       this.handleLogOut().then(() => {
+        if (window.localStorage) {
+          let loc = window.localStorage
+          loc.removeItem('tagNaveList')
+        }
         this.$router.push({
           name: 'login'
         })
+      }).catch(e => {
+        if (window.localStorage) {
+          let loc = window.localStorage
+          loc.removeItem('tagNaveList')
+        }
       })
     },
     message () {
@@ -49,8 +55,6 @@ export default {
     handleClick (name) {
       switch (name) {
         case 'logout': this.logout()
-          break
-        case 'message': this.message()
           break
       }
     }

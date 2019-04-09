@@ -10,7 +10,14 @@ const { homeName } = config
 Vue.use(Router)
 const router = new Router({
   routes,
-  mode: 'history'
+  mode: 'history',
+  scrollBehavior (to, from, savedPosition) {
+    if (to.hash) {
+      return {
+        selector: to.hash
+      }
+    }
+  }
 })
 const LOGIN_PAGE_NAME = 'login'
 
@@ -37,17 +44,49 @@ router.beforeEach((to, from, next) => {
     })
   } else {
     if (store.state.user.hasGetInfo) {
-      turnTo(to, store.state.user.access, next)
-    } else {
-      store.dispatch('getUserInfo').then(user => {
-        // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
-        turnTo(to, user.access, next)
-      }).catch(() => {
+      let loc = null
+      if (window.localStorage) {
+        loc = window.localStorage
+      }
+      if ((loc.getItem('usersInfo') !== null)) {
+        if (store.state.caseId === null) {
+          if (loc.getItem('caseId')) {
+            store.commit('SET_CASEID', loc.getItem('caseId'))
+          }
+        }
+        if (store.state.caseState === null) {
+          if (loc.getItem('caseState')) {
+            store.commit('SET_CASESTATE', loc.getItem('caseState'))
+          }
+        }
+        store.commit('SET_USERSINFO', JSON.parse(loc.getItem('usersInfo')))
+        turnTo(to, store.state.user.access, next)
+      } else {
         setToken('')
         next({
           name: 'login'
         })
-      })
+      }
+    } else {
+      let loc = null
+      if (window.localStorage) {
+        loc = window.localStorage
+      }
+      if ((loc.getItem('usersInfo') !== null)) {
+        let _obj = JSON.parse(loc.getItem('usersInfo'))
+        store.commit('SET_USERSINFO', JSON.parse(loc.getItem('usersInfo')))
+        store.commit('setAvatar', '')
+        store.commit('setUserName', _obj.name)
+        store.commit('setUserId', _obj.user_id)
+        store.commit('setAccess', _obj.access)
+        store.commit('setHasGetInfo', true)
+        turnTo(to, _obj.access, next)
+      } else {
+        setToken('')
+        next({
+          name: 'login'
+        })
+      }
     }
   }
 })

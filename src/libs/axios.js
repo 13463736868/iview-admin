@@ -1,16 +1,18 @@
 import axios from 'axios'
-import store from '@/store'
+import router from 'vue-router'
+// import store from '@/store'
+import qs from 'qs'
 // import { Spin } from 'iview'
-const addErrorLog = errorInfo => {
-  const { statusText, status, request: { responseURL } } = errorInfo
-  let info = {
-    type: 'ajax',
-    code: status,
-    mes: statusText,
-    url: responseURL
-  }
-  if (!responseURL.includes('save_error_logger')) store.dispatch('addErrorLog', info)
-}
+// const addErrorLog = errorInfo => {
+//   const { statusText, status, request: { responseURL } } = errorInfo
+//   let info = {
+//     type: 'ajax',
+//     code: status,
+//     mes: statusText,
+//     url: responseURL
+//   }
+//   if (!responseURL.includes('save_error_logger')) store.dispatch('addErrorLog', info)
+// }
 
 class HttpRequest {
   constructor (baseUrl = baseURL) {
@@ -21,8 +23,9 @@ class HttpRequest {
     const config = {
       baseURL: this.baseUrl,
       headers: {
-        //
-      }
+        ContentType: 'application/x-www-form-urlencoded;charset=utf-8'
+      },
+      timeout: 20000
     }
     return config
   }
@@ -33,8 +36,12 @@ class HttpRequest {
     }
   }
   interceptors (instance, url) {
+    console.log(url)
     // 请求拦截
     instance.interceptors.request.use(config => {
+      if (config.method === 'post') {
+        config.data = qs.stringify(config.data)
+      }
       // 添加全局的loading...
       if (!Object.keys(this.queue).length) {
         // Spin.show() // 不建议开启，因为界面不友好
@@ -46,21 +53,37 @@ class HttpRequest {
     })
     // 响应拦截
     instance.interceptors.response.use(res => {
-      this.destroy(url)
-      const { data, status } = res
-      return { data, status }
-    }, error => {
-      this.destroy(url)
-      let errorInfo = error.response
-      if (!errorInfo) {
-        const { request: { statusText, status }, config } = JSON.parse(JSON.stringify(error))
-        errorInfo = {
-          statusText,
-          status,
-          request: { responseURL: config.url }
+      if (res.data.flag === true) {
+        this.destroy(url)
+        const { data, status } = res
+        return { data, status }
+      } else {
+        switch (res.data.code) {
+          case '000121':
+            // 没有登录
+            // removeToken()
+            // 如何跳转到登录页面
+            // if (router.currentRoute.path !== 'login') {
+            router.replace({
+              path: '/login'
+            })
+            // }
+            break
         }
+        return Promise.reject(res.data.message)
       }
-      addErrorLog(errorInfo)
+    }, (error) => {
+      this.destroy(url)
+      switch (error.status) {
+        case 401:
+        case 403:
+          // removeToken()
+          // 清除token store localStorage 等等
+          router.replace({
+            path: '/login'
+          })
+          break
+      }
       return Promise.reject(error)
     })
   }

@@ -31,7 +31,19 @@ export default {
       default: false
     }
   },
+  watch: {
+    list (val, old) {
+      this.setItemTo()
+    }
+  },
   methods: {
+    setItemTo () {
+      this.list.forEach((a, b) => {
+        if (a.name === 'caseAll') {
+          a.to = '/caseMana/caseAll'
+        }
+      })
+    },
     showTitle (item) {
       return showTitle(item, this)
     },
