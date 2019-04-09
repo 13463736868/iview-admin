@@ -235,7 +235,7 @@ export default [
         name: 'casetypeSet',
         meta: {
           icon: 'md-git-merge',
-          title: '客户信息审核管理'
+          title: '客户合同类型分配'
         },
         component: () => import('@/view/manager/casetypeSet.vue')
       }
