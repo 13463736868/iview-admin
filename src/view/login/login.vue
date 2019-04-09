@@ -49,19 +49,19 @@ export default {
     return {
       style: {
         bg: {
-          backgroundImage: 'url(' + require('_assets/images/login_bg.png') + ')',
+          backgroundImage: 'url(' + require('_static/images/login_bg.png') + ')',
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover'
         },
         icon: {
-          src: require('_assets/images/login_icon.png')
+          src: require('_static/images/login_icon.png')
         },
         loginLogo: {
           height: '65px',
           userSelect: 'none'
         },
         bgCenter: {
-          backgroundImage: 'url(' + require('_assets/images/login_center.png') + ')',
+          backgroundImage: 'url(' + require('_static/images/login_center.png') + ')',
           backgroundRepeat: 'no-repeat',
           backgroundSize: '100% 100%'
         }

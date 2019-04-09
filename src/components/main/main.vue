@@ -74,7 +74,7 @@ export default {
     },
     userAvatar () {
       // return this.$store.state.user.avatarImgPath
-      return require('_assets/images/avatar.jpg')
+      return require('_static/images/avatar.jpg')
     },
     cacheList () {
       const list = ['ParentView', ...this.tagNavList.length ? this.tagNavList.filter(item => !(item.meta && item.meta.notCache)).map(item => item.name) : []]
