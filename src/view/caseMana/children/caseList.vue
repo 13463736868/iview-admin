@@ -12,11 +12,18 @@
           </Select>
         </Col>
       </template>
-      <Col span="8" :offset="caseState === 3 ? 10 : 15" class="tc">
+      <Col v-if="caseState === 1 || caseState === 0" span="8" :offset="caseState === 3 ? 10 : 15" class="tr">
         <Button type="primary" class="mr20" @click="resAction('sear')">条件搜索</Button>
         <Button type="primary" class="mr20" @click="resAgrees('1')">批量通过</Button>
         <Button type="primary" class="mr20" @click="resAgrees('2')">批量不通过</Button>
         <Button v-if="usersInfo.roleType === '1' || usersInfo.roleType === '2'" type="primary" @click="resAllots">批量分案</Button>
+      </Col>
+      <Col v-if="caseState === 2" span="2" offset="21" class="tr">
+        <Button type="primary" class="mr20" @click="resAction('sear')">条件搜索</Button>
+      </Col>
+      <Col v-if="caseState === 3" span="6" :offset="caseState === 3 ? 12 : 17" class="tr">
+        <Button type="primary" class="mr20" @click="resAction('sear')">条件搜索</Button>
+        <Button type="primary" class="mr20" @click="resSubms">批量提交</Button>
       </Col>
     </Row>
     <div class="_caseList clearfix">
@@ -116,13 +123,16 @@
         </Col>
       </Row>
     </alert-btn-info>
+    <alert-btn-info :alertShow="alertShow.submShow" @alertConfirm="sendAjax('subm')" @alertCancel="alertCanc('subm')" alertTitle="操作">
+      <p>确定要提交到仲裁委吗？</p>
+    </alert-btn-info>
   </div>
 </template>
 <script>
 import { mapGetters } from 'vuex'
 import spinComp from '@/components/common-w/spin'
 import alertBtnInfo from '@/components/common-w/alertBtnInfo'
-import { caseFindList, maOrgTreeList, casesAllot, casesAgree, usersList, arbitList } from '@/api/datas.js'
+import { caseFindList, maOrgTreeList, casesAllot, casesAgree, usersList, arbitList, submCase } from '@/api/datas.js'
 import { caseInfo } from '@/config/common.js'
 
 export default {
@@ -275,7 +285,8 @@ export default {
         agreeShow: false,
         alloterId: null,
         idsAgreeList: [],
-        idsAgreeStatus: null
+        idsAgreeStatus: null,
+        submShow: false
       },
       treeList: {
         header: [
@@ -328,7 +339,7 @@ export default {
       let _obj = params.row
       let _roleType = this.usersInfo.roleType
       if (_roleType === '3') {
-        if (_obj.showButtonState === '2') {
+        if (_obj.showButtonState === '2' || (this.caseState === 3 && _obj.state === 14)) {
           if (this.alertShow.idsList.indexOf(_obj.id) === -1) {
             return h('div', [
               h('Icon', {
@@ -373,7 +384,7 @@ export default {
           ])
         }
       } else if (_roleType === '2' || _roleType === '1') {
-        if (_obj.showButtonState === '1') {
+        if (_obj.showButtonState === '1' || (this.caseState === 3 && _obj.state === 14)) {
           if (this.alertShow.idsList.indexOf(_obj.id) === -1) {
             return h('div', [
               h('Icon', {
@@ -482,8 +493,27 @@ export default {
             }, '不通过')
           ])
         } else {
-          return h('div', [
-          ])
+          if ((this.caseState === 3 || this.caseState === 0) && _obj.state === 14) {
+            return h('div', [
+              h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    this.resSubmCase(params.index)
+                  }
+                }
+              }, '提交')
+            ])
+          } else {
+            return h('div', [
+            ])
+          }
         }
       } else if (_roleType === '2' || _roleType === '1') {
         if (_obj.showButtonState === '1') {
@@ -532,8 +562,27 @@ export default {
             }, '分案')
           ])
         } else {
-          return h('div', [
-          ])
+          if ((this.caseState === 3 || this.caseState === 0) && _obj.state === 14) {
+            return h('div', [
+              h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    this.resSubmCase(params.index)
+                  }
+                }
+              }, '提交')
+            ])
+          } else {
+            return h('div', [
+            ])
+          }
         }
       }
     },
@@ -571,17 +620,36 @@ export default {
       this.pageObj.pageNum = page
       this.resCaseList()
     },
+    resSubmCase (index) {
+      let _res = this.caseList.bodyList[index]
+      let _o = {}
+      this.alertShow.idsList = []
+      this.alertShow.idsAgreeList = []
+      _o[_res.id] = _res.arbitrationId
+      this.alertShow.idsList.push(_res.id)
+      this.alertShow.idsAgreeList.push(_o)
+      this.alertShow.submShow = true
+    },
+    resSubms () {
+      if (this.alertShow.idsList.length === 0) {
+        this.resMessage('error', '请先选择一个案件')
+      } else {
+        this.alertShow.submShow = true
+      }
+    },
     resAgreeCase (status, index) {
       let _res = this.caseList.bodyList[index]
       let _o = {}
+      this.alertShow.idsList = []
       this.alertShow.idsAgreeList = []
-      this.alertShow.idsAgreeStatus = status
       _o[_res.id] = _res.arbitrationId
+      this.alertShow.idsList.push(_res.id)
       this.alertShow.idsAgreeList.push(_o)
+      this.alertShow.idsAgreeStatus = status
       this.alertShow.agreeShow = true
     },
     resAgrees (status) {
-      if (this.alertShow.idsAgreeList.length === 0) {
+      if (this.alertShow.idsList.length === 0) {
         this.resMessage('error', '请先选择一个案件')
       } else {
         this.alertShow.idsAgreeStatus = status
@@ -651,6 +719,18 @@ export default {
     },
     sendAjax (type) {
       switch (type) {
+        case 'subm':
+          submCase({
+            ids: JSON.stringify(this.alertShow.idsAgreeList)
+          }).then(res => {
+            this.alertCanc('subm')
+            this.resMessage('success', '操作成功')
+            this.resSearch()
+          }).catch(e => {
+            this.alertCanc('subm')
+            this.resMessage('error', '错误信息:' + e + ' 稍后再试')
+          })
+          break
         case 'sear':
           this.resSearch()
           break
@@ -669,7 +749,7 @@ export default {
           break
         case 'agree':
           casesAgree({
-            ids: JSON.stringify(this.alertShow.idsAgreeList),
+            ids: this.alertShow.idsList.join(','),
             status: this.alertShow.idsAgreeStatus - 0
           }).then(res => {
             this.alertCanc('agree')
@@ -690,6 +770,11 @@ export default {
     },
     alertCanc (type) {
       switch (type) {
+        case 'subm':
+          this.alertShow.submShow = false
+          this.alertShow.idsList = []
+          this.alertShow.idsAgreeList = []
+          break
         case 'sear':
           this.alertShow.searShow = false
           this.search.submitter = null
@@ -707,6 +792,7 @@ export default {
         case 'allot':
           this.alertShow.allotShow = false
           this.alertShow.idsList = []
+          this.alertShow.idsAgreeList = []
           this.alertShow.alloterId = null
           break
         case 'agree':

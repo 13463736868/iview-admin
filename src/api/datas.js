@@ -143,7 +143,7 @@ export const casesAllot = data => {
 
 export const casesAgree = data => {
   return axios.request({
-    url: '/cases/updateSubmitCases',
+    url: '/cases/updateApproveCases',
     data,
     method: 'post'
   })
@@ -192,6 +192,86 @@ export const maCusAdd = data => {
 export const maCusDel = data => {
   return axios.request({
     url: '/maCusTypeUser/delete',
+    data,
+    method: 'post'
+  })
+}
+
+export const userCompList = data => {
+  return axios.request({
+    url: '/users/company/list',
+    data,
+    method: 'post'
+  })
+}
+
+export const userCompAdd = data => {
+  return axios.request({
+    url: '/users/company/item/' + (data.id === null ? '1' : '2'),
+    data,
+    method: 'post'
+  })
+}
+
+export const userCompDeta = data => {
+  return axios.request({
+    url: '/users/company/detail',
+    data,
+    method: 'post'
+  })
+}
+
+export const userCompState = data => {
+  return axios.request({
+    url: '/users/company/item/updateState',
+    data,
+    method: 'post'
+  })
+}
+
+export const userRegiList = data => {
+  return axios.request({
+    url: '/users/register/list',
+    data,
+    method: 'post'
+  })
+}
+
+export const userRegiAdd = data => {
+  return axios.request({
+    url: '/users/register/item/' + (data.id === null ? '1' : '2'),
+    data,
+    method: 'post'
+  })
+}
+
+export const userRegiDeta = data => {
+  return axios.request({
+    url: '/users/register/detail',
+    data,
+    method: 'post'
+  })
+}
+
+export const userRegiState = data => {
+  return axios.request({
+    url: '/users/register/item/updateState',
+    data,
+    method: 'post'
+  })
+}
+
+export const updatePass = data => {
+  return axios.request({
+    url: '/users/updatePassword',
+    data,
+    method: 'post'
+  })
+}
+
+export const submCase = data => {
+  return axios.request({
+    url: '/cases/updateSubmitCases',
     data,
     method: 'post'
   })

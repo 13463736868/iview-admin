@@ -33,7 +33,7 @@ export default [
     component: Main,
     meta: {
       hideInMenu: true,
-      notCache: false
+      notCache: true
     }
   },
   {
@@ -42,7 +42,8 @@ export default [
     meta: {
       access: ['casePend', 'caseAudi', 'caseTran', 'caseAll'],
       icon: 'md-list',
-      title: '案件管理'
+      title: '案件管理',
+      notCache: true
     },
     component: Main,
     children: [
@@ -52,7 +53,8 @@ export default [
         meta: {
           access: ['casePend'],
           icon: 'ios-albums',
-          title: '待审核案件'
+          title: '待审核案件',
+          notCache: true
         },
         component: () => import('@/view/caseMana/casePend.vue')
       },
@@ -62,7 +64,8 @@ export default [
         meta: {
           access: ['caseAudi'],
           icon: 'ios-albums',
-          title: '已审核案件'
+          title: '已审核案件',
+          notCache: true
         },
         component: () => import('@/view/caseMana/caseAudi.vue')
       },
@@ -72,7 +75,8 @@ export default [
         meta: {
           access: ['caseTran'],
           icon: 'ios-albums',
-          title: '已移送案件'
+          title: '已移送案件',
+          notCache: true
         },
         component: () => import('@/view/caseMana/caseTran.vue')
       },
@@ -82,7 +86,8 @@ export default [
         meta: {
           access: ['caseAll'],
           icon: 'ios-albums',
-          title: '全部案件'
+          title: '全部案件',
+          notCache: true
         },
         component: () => import('@/view/caseMana/caseAll.vue')
       }

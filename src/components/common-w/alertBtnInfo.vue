@@ -5,6 +5,7 @@
       :title="alertTitle"
       :mask-closable="false"
       :closable="false"
+      :width="setWidth === null ? 580 : setWidth"
       class="not_s">
       <div>
         <slot></slot>
@@ -20,7 +21,7 @@
 <script>
 export default {
   name: 'alert_btn_info',
-  props: ['alertShow', 'alertTitle', 'isSaveBtn', 'isCancBtn'],
+  props: ['alertShow', 'alertTitle', 'isSaveBtn', 'isCancBtn', 'setWidth'],
   data () {
     return {}
   },

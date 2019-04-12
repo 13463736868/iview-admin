@@ -1,6 +1,6 @@
 import axios from 'axios'
 import router from 'vue-router'
-// import store from '@/store'
+import store from '@/store'
 import qs from 'qs'
 // import { Spin } from 'iview'
 // const addErrorLog = errorInfo => {
@@ -60,14 +60,14 @@ class HttpRequest {
       } else {
         switch (res.data.code) {
           case '000121':
-            // 没有登录
-            // removeToken()
-            // 如何跳转到登录页面
-            // if (router.currentRoute.path !== 'login') {
-            router.replace({
-              path: '/login'
+            if (window.localStorage) {
+              let loc = window.localStorage
+              loc.removeItem('tagNaveList')
+            }
+            store.commit('setToken', null)
+            router.push({
+              name: 'login'
             })
-            // }
             break
         }
         return Promise.reject(res.data.message)
