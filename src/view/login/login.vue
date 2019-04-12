@@ -67,7 +67,7 @@ export default {
         }
       },
       user: {
-        userName: 'super_admin',
+        userName: '',
         password: '',
         code: '',
         showPass: false
