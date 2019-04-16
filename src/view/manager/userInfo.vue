@@ -604,7 +604,7 @@ export default {
     resStatusUser (state, index) {
       this.alertShow.stateCode = state
       if (this.search.type === 'company') {
-        this.alertShow.userId = this.companyList.bodyList[index].userid
+        this.alertShow.userId = this.companyList.bodyList[index].userId
       } else if (this.search.type === 'register') {
         this.alertShow.userId = this.registerList.bodyList[index].userid
       } else {
