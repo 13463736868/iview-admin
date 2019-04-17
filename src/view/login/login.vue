@@ -54,10 +54,10 @@ export default {
           backgroundSize: 'cover'
         },
         icon: {
-          src: require('_static/images/login_icon.png')
+          src: require('_static/images/logo-min.png')
         },
         loginLogo: {
-          height: '65px',
+          height: '46px',
           userSelect: 'none'
         },
         bgCenter: {
